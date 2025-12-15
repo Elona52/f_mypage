@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.trade.mapper.TradeRequestMapper">
+
+    <resultMap id="tradeRequestMap" type="com.project.trade.domain.TradeRequest">
+        <id property="id" column="trade_id"/>
+        <result property="reservationId" column="reservation_id"/>
+        <result property="sellerUserId" column="seller_user_id"/>
+        <result property="buyerUserId" column="buyer_user_id"/>
+        <result property="price" column="price"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 전체 조회 -->
+    <select id="findAll" resultMap="tradeRequestMap">
+        SELECT * FROM trade_request ORDER BY created_at DESC
+    </select>
+
+    <!-- 단건 조회 -->
+    <select id="findById" resultMap="tradeRequestMap">
+        SELECT * FROM trade_request WHERE trade_id = #{id}
+    </select>
+
+    <!-- 사용자별 조회 (신청자/판매자/구매자 모두 포함) -->
+    <select id="findByUser" resultMap="tradeRequestMap">
+        SELECT * FROM trade_request 
+        WHERE seller_user_id = #{userId} OR buyer_user_id = #{userId}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 예약별 조회 -->
+    <select id="findByReservation" resultMap="tradeRequestMap">
+        SELECT * FROM trade_request 
+        WHERE reservation_id = #{reservationId}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 등록 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO trade_request (
+            reservation_id, seller_user_id, buyer_user_id, price, status, created_at, updated_at
+        ) VALUES (
+            #{reservationId}, #{sellerUserId}, #{buyerUserId}, #{price},
+            COALESCE(#{status}, 'PENDING'), NOW(), NOW()
+        )
+    </insert>
+
+    <!-- 상태 변경 -->
+    <update id="updateStatus">
+        UPDATE trade_request
+        SET status = #{status},
+            updated_at = NOW()
+        WHERE trade_id = #{id}
+    </update>
+
+</mapper>
+

@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.mp.mapper.ReviewMapper">
+<mapper namespace="com.project.mapper.ReviewMapper">
 
-    <resultMap id="reviewMap" type="com.mp.domain.Review">
+    <resultMap id="reviewMap" type="com.project.domain.Review">
         <id property="id" column="review_id"/>
         <result property="userId" column="user_id"/>
         <result property="instructorId" column="instructor_id"/>
@@ -16,27 +16,87 @@
 
     <!-- 전체 조회 -->
     <select id="findAll" resultMap="reviewMap">
-        SELECT * FROM review ORDER BY created_at DESC
+        SELECT *
+        FROM review rev
+        WHERE EXISTS (
+            SELECT 1 FROM reservation r
+            WHERE r.reservation_id = rev.reservation_id
+              AND r.payment_status = '결제완료'
+              AND (r.deleted = false OR r.deleted IS NULL)
+        )
+        AND EXISTS (
+            SELECT 1 FROM history h
+            WHERE h.reservation_id = rev.reservation_id
+        )
+        ORDER BY rev.created_at DESC
     </select>
 
     <!-- 단건 조회 -->
     <select id="findById" resultMap="reviewMap">
-        SELECT * FROM review WHERE review_id = #{id}
+        SELECT *
+        FROM review rev
+        WHERE rev.review_id = #{id}
+        AND EXISTS (
+            SELECT 1 FROM reservation r
+            WHERE r.reservation_id = rev.reservation_id
+              AND r.payment_status = '결제완료'
+              AND (r.deleted = false OR r.deleted IS NULL)
+        )
+        AND EXISTS (
+            SELECT 1 FROM history h
+            WHERE h.reservation_id = rev.reservation_id
+        )
     </select>
 
     <!-- instructor 별 리뷰 조회 -->
     <select id="findByInstructor" resultMap="reviewMap">
-        SELECT * FROM review WHERE instructor_id = #{instructorId}
+        SELECT *
+        FROM review rev
+        WHERE rev.instructor_id = #{instructorId}
+        AND EXISTS (
+            SELECT 1 FROM reservation r
+            WHERE r.reservation_id = rev.reservation_id
+              AND r.payment_status = '결제완료'
+              AND (r.deleted = false OR r.deleted IS NULL)
+        )
+        AND EXISTS (
+            SELECT 1 FROM history h
+            WHERE h.reservation_id = rev.reservation_id
+        )
     </select>
 
     <!-- member 별 리뷰 조회 -->
     <select id="findByUser" resultMap="reviewMap">
-        SELECT * FROM review WHERE user_id = #{userId}
+        SELECT *
+        FROM review rev
+        WHERE rev.user_id = #{userId}
+        AND EXISTS (
+            SELECT 1 FROM reservation r
+            WHERE r.reservation_id = rev.reservation_id
+              AND r.payment_status = '결제완료'
+              AND (r.deleted = false OR r.deleted IS NULL)
+        )
+        AND EXISTS (
+            SELECT 1 FROM history h
+            WHERE h.reservation_id = rev.reservation_id
+        )
     </select>
 
     <!-- 예약 1건 = 리뷰 1개 규칙 -->
     <select id="findByReservation" resultMap="reviewMap">
-        SELECT * FROM review WHERE reservation_id = #{reservationId}
+        SELECT *
+        FROM review rev
+        WHERE rev.reservation_id = #{reservationId}
+        AND EXISTS (
+            SELECT 1 FROM reservation r
+            WHERE r.reservation_id = rev.reservation_id
+              AND r.payment_status = '결제완료'
+              AND (r.deleted = false OR r.deleted IS NULL)
+        )
+        AND EXISTS (
+            SELECT 1 FROM history h
+            WHERE h.reservation_id = rev.reservation_id
+        )
     </select>
 
     <!-- 등록 -->

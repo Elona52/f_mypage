@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.reservation.mapper.ReservationMapper">
+
+    <resultMap id="reservationMap" type="com.project.reservation.domain.Reservation">
+        <id property="id" column="reservation_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="classId" column="class_id"/>
+        <result property="facilityId" column="facility_id"/>
+        <result property="paymentStatus" column="payment_status"/>
+        <result property="deleted" column="deleted"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="deletedAt" column="deleted_at"/>
+    </resultMap>
+
+    <!-- 전체 조회 (삭제되지 않은 것만) -->
+    <select id="findAll" resultMap="reservationMap">
+        SELECT * FROM reservation 
+        WHERE deleted = false OR deleted IS NULL
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 단건 조회 (삭제되지 않은 것만) -->
+    <select id="findById" resultMap="reservationMap">
+        SELECT * FROM reservation 
+        WHERE reservation_id = #{id} 
+        AND (deleted = false OR deleted IS NULL)
+    </select>
+
+    <!-- 사용자별 예약 조회 (삭제되지 않은 것만) -->
+    <select id="findByUser" resultMap="reservationMap">
+        SELECT * FROM reservation 
+        WHERE user_id = #{userId} 
+        AND (deleted = false OR deleted IS NULL)
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 결제 상태별 예약 조회 (삭제되지 않은 것만) -->
+    <select id="findByPaymentStatus" resultMap="reservationMap">
+        SELECT * FROM reservation 
+        WHERE payment_status = #{paymentStatus} 
+        AND (deleted = false OR deleted IS NULL)
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 사용자별 + 결제 상태별 예약 조회 (삭제되지 않은 것만) -->
+    <select id="findByUserAndPaymentStatus" resultMap="reservationMap">
+        SELECT * FROM reservation 
+        WHERE user_id = #{userId} 
+        AND payment_status = #{paymentStatus} 
+        AND (deleted = false OR deleted IS NULL)
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 등록 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO reservation (user_id, class_id, facility_id, payment_status, deleted, created_at)
+        VALUES (#{userId}, #{classId}, #{facilityId}, 
+                COALESCE(#{paymentStatus}, '대기중'), 
+                COALESCE(#{deleted}, false), NOW())
+    </insert>
+
+    <!-- 수정 -->
+    <update id="update">
+        UPDATE reservation
+        SET user_id = #{userId},
+            class_id = #{classId},
+            facility_id = #{facilityId},
+            payment_status = #{paymentStatus}
+        WHERE reservation_id = #{id}
+    </update>
+
+    <!-- 결제 상태만 수정 -->
+    <update id="updatePaymentStatus">
+        UPDATE reservation
+        SET payment_status = #{paymentStatus}
+        WHERE reservation_id = #{id}
+        AND (deleted = false OR deleted IS NULL)
+    </update>
+
+    <!-- 소프트 삭제 (논리적 삭제) -->
+    <update id="softDelete">
+        UPDATE reservation
+        SET deleted = true,
+            deleted_at = NOW()
+        WHERE reservation_id = #{id}
+        AND (deleted = false OR deleted IS NULL)
+    </update>
+
+    <!-- 물리적 삭제 (관리자용, 실제로는 사용하지 않음) -->
+    <delete id="delete">
+        DELETE FROM reservation WHERE reservation_id = #{id}
+    </delete>
+
+</mapper>
+
