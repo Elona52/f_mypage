@@ -13,11 +13,11 @@ public interface ReservationMapper {
 	
 	public Reservation findById(Long id);
 	
-	public List<Reservation> findByUser(Long userId);
+	public List<Reservation> findByUser(String userId);
 
 	public List<Reservation> findByPaymentStatus(String paymentStatus);
 
-	public List<Reservation> findByUserAndPaymentStatus(Long userId, String paymentStatus);
+	public List<Reservation> findByUserAndPaymentStatus(String userId, String paymentStatus);
 
 	public int insert(Reservation reservation);
 

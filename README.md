@@ -386,28 +386,1684 @@ MariaDB 데이터베이스
 
 ## 📡 API 엔드포인트
 
+## 📊 API 정리표
+
+| API 종류 | API 명(영어) | API 명(한글) | 설명 |
+|---------|------------|------------|------|
+| 예약 | getAllReservations | 전체 예약 목록 조회 | 전체 예약 목록을 조회한다 |
+| 예약 | getReservation | 예약 단건 조회 | 예약 ID로 예약 정보를 조회한다 |
+| 예약 | getUserReservations | 사용자별 예약 목록 조회 | 특정 사용자의 예약 목록을 조회한다 |
+| 예약 | getReservationsByPaymentStatus | 결제 상태별 예약 목록 조회 | 결제 상태별로 예약 목록을 조회한다 |
+| 예약 | getUserReservationsByPaymentStatus | 사용자별 + 결제 상태별 예약 목록 조회 | 특정 사용자의 특정 결제 상태 예약 목록을 조회한다 |
+| 예약 | getActiveReservations | 이용중인 수강권/강의내역 조회 | 이용중인 수강권/강의내역을 조회한다 (결제완료 상태만 반환) |
+| 예약 | makeReservation | 예약 생성 | 새로운 예약을 생성한다 |
+| 예약 | updatePaymentStatus | 결제 상태 변경 | 예약의 결제 상태를 변경한다 |
+| 예약 | deleteReservation | 예약 삭제 | 예약을 삭제한다 (소프트 삭제) |
+| 리뷰 | getAllReviews | 전체 리뷰 목록 조회 | 전체 리뷰 목록을 조회한다 |
+| 리뷰 | getReview | 리뷰 단건 조회 | 리뷰 ID로 리뷰 정보를 조회한다 |
+| 리뷰 | getByInstructor | 강사별 리뷰 조회 | 특정 강사의 리뷰 목록을 조회한다 |
+| 리뷰 | getByUser | 사용자별 리뷰 조회 | 특정 사용자의 리뷰 목록을 조회한다 |
+| 리뷰 | getByReservation | 예약별 리뷰 조회 | 특정 예약의 리뷰를 조회한다 |
+| 리뷰 | createReview | 리뷰 생성 | 새로운 리뷰를 생성한다 |
+| 리뷰 | updateReview | 리뷰 수정 | 리뷰 정보를 수정한다 |
+| 리뷰 | deleteReview | 리뷰 삭제 | 리뷰를 삭제한다 |
+| 거래 신청 | getAll | 전체 거래 신청 목록 조회 | 전체 이용권 거래 신청 목록을 조회한다 |
+| 거래 신청 | getById | 거래 신청 단건 조회 | 거래 ID로 거래 신청 정보를 조회한다 |
+| 거래 신청 | getByUser | 사용자별 거래 신청 조회 | 특정 사용자의 거래 신청 목록을 조회한다 |
+| 거래 신청 | getByReservation | 예약별 거래 신청 조회 | 특정 예약의 거래 신청 목록을 조회한다 |
+| 거래 신청 | createTradeRequest | 이용권 거래 신청 생성 | 새로운 이용권 거래 신청을 생성한다 |
+| 거래 신청 | updateStatus | 거래 상태 변경 | 거래 신청의 상태를 변경한다 |
+| 이용내역 | getByUser | 사용자별 이용내역 조회 | 특정 사용자의 이용내역을 조회한다 |
+| 이용내역 | getByReservation | 예약별 이용내역 조회 | 특정 예약의 이용내역을 조회한다 |
+| 이용내역 | getByTrade | 거래별 이용내역 조회 | 특정 거래의 이용내역을 조회한다 |
+
+## 📋 API 명세서
+
+---
+
+### 전체 예약 목록 조회
+
+#### API 정보
+- **URL**: `/api/reservations`
+- **Method**: `GET`
+- **Description**: 전체 예약 목록을 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| - | - | Array[Reservation] | Y | 예약 목록 | - |
+| | rsv_id | Long | Y | 예약 ID | - |
+| | usr_id | String | Y | 회원(사용자) ID | - |
+| | schd_id | Long | Y | 스케줄 ID | - |
+| | tkt_id | Long | N | 사용이용권 ID | - |
+| | stts_cd | String | Y | 상태코드 | - |
+| | reg_dt | LocalDateTime | Y | 등록일시 | - |
+| | cncl_rsn | String | N | 취소/변경사유(관리자용) | - |
+| | mod_usr_ID | String | N | 수정자 ID | - |
+
+#### Request Example
+```
+GET /api/reservations
+```
+
+#### Response Example
+```json
+[
+  {
+    "rsv_id": 1,
+    "usr_id": "user123",
+    "schd_id": 10,
+    "tkt_id": 5,
+    "stts_cd": "예약완료",
+    "reg_dt": "2024-01-15T10:30:00",
+    "cncl_rsn": null,
+    "mod_usr_ID": null
+  }
+]
+```
+
+---
+
+### 예약 단건 조회
+
+#### API 정보
+- **URL**: `/api/reservations/{id}`
+- **Method**: `GET`
+- **Description**: 예약 ID로 예약 정보를 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | id | Long | Y | 예약 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| - | - | Reservation | Y | 예약 정보 | - |
+| | rsv_id | Long | Y | 예약 ID | - |
+| | usr_id | String | Y | 회원(사용자) ID | - |
+| | schd_id | Long | Y | 스케줄 ID | - |
+| | tkt_id | Long | N | 사용이용권 ID | - |
+| | stts_cd | String | Y | 상태코드 | - |
+| | reg_dt | LocalDateTime | Y | 등록일시 | - |
+| | cncl_rsn | String | N | 취소/변경사유(관리자용) | - |
+| | mod_usr_ID | String | N | 수정자 ID | - |
+
+#### Request Example
+```
+GET /api/reservations/1
+```
+
+#### Response Example
+```json
+{
+  "rsv_id": 1,
+  "usr_id": "user123",
+  "schd_id": 10,
+  "tkt_id": 5,
+  "stts_cd": "예약완료",
+  "reg_dt": "2024-01-15T10:30:00",
+  "cncl_rsn": null,
+  "mod_usr_ID": null
+}
+```
+
+---
+
+### 사용자별 예약 목록 조회
+
+#### API 정보
+- **URL**: `/api/reservations/user/{userId}`
+- **Method**: `GET`
+- **Description**: 특정 사용자의 예약 목록을 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | userId | Long | Y | 사용자 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| - | - | Array[Reservation] | Y | 예약 목록 | - |
+| | rsv_id | Long | Y | 예약 ID | - |
+| | usr_id | String | Y | 회원(사용자) ID | - |
+| | schd_id | Long | Y | 스케줄 ID | - |
+| | tkt_id | Long | N | 사용이용권 ID | - |
+| | stts_cd | String | Y | 상태코드 | - |
+| | reg_dt | LocalDateTime | Y | 등록일시 | - |
+| | cncl_rsn | String | N | 취소/변경사유(관리자용) | - |
+| | mod_usr_ID | String | N | 수정자 ID | - |
+
+#### Request Example
+```
+GET /api/reservations/user/1
+```
+
+#### Response Example
+```json
+[
+  {
+    "rsv_id": 1,
+    "usr_id": "user123",
+    "schd_id": 10,
+    "tkt_id": 5,
+    "stts_cd": "예약완료",
+    "reg_dt": "2024-01-15T10:30:00",
+    "cncl_rsn": null,
+    "mod_usr_ID": null
+  }
+]
+```
+
+---
+
+### 결제 상태별 예약 목록 조회
+
+#### API 정보
+- **URL**: `/api/reservations/payment-status/{paymentStatus}`
+- **Method**: `GET`
+- **Description**: 결제 상태별로 예약 목록을 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | paymentStatus | String | Y | 결제 상태 (대기중/결제완료) | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| - | - | Array[Reservation] | Y | 예약 목록 | - |
+| | rsv_id | Long | Y | 예약 ID | - |
+| | usr_id | String | Y | 회원(사용자) ID | - |
+| | schd_id | Long | Y | 스케줄 ID | - |
+| | tkt_id | Long | N | 사용이용권 ID | - |
+| | stts_cd | String | Y | 상태코드 | - |
+| | reg_dt | LocalDateTime | Y | 등록일시 | - |
+| | cncl_rsn | String | N | 취소/변경사유(관리자용) | - |
+| | mod_usr_ID | String | N | 수정자 ID | - |
+
+#### Request Example
+```
+GET /api/reservations/payment-status/대기중
+```
+
+#### Response Example
+```json
+[
+  {
+    "rsv_id": 1,
+    "usr_id": "user123",
+    "schd_id": 10,
+    "tkt_id": 5,
+    "stts_cd": "예약완료",
+    "reg_dt": "2024-01-15T10:30:00",
+    "cncl_rsn": null,
+    "mod_usr_ID": null
+  }
+]
+```
+
+---
+
+### 사용자별 + 결제 상태별 예약 목록 조회
+
+#### API 정보
+- **URL**: `/api/reservations/user/{userId}/payment-status/{paymentStatus}`
+- **Method**: `GET`
+- **Description**: 특정 사용자의 특정 결제 상태 예약 목록을 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | userId | Long | Y | 사용자 ID | |
+| Path Variable | paymentStatus | String | Y | 결제 상태 (대기중/결제완료) | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| - | - | Array[Reservation] | Y | 예약 목록 | - |
+| | rsv_id | Long | Y | 예약 ID | - |
+| | usr_id | String | Y | 회원(사용자) ID | - |
+| | schd_id | Long | Y | 스케줄 ID | - |
+| | tkt_id | Long | N | 사용이용권 ID | - |
+| | stts_cd | String | Y | 상태코드 | - |
+| | reg_dt | LocalDateTime | Y | 등록일시 | - |
+| | cncl_rsn | String | N | 취소/변경사유(관리자용) | - |
+| | mod_usr_ID | String | N | 수정자 ID | - |
+
+#### Request Example
+```
+GET /api/reservations/user/1/payment-status/결제완료
+```
+
+#### Response Example
+```json
+[
+  {
+    "rsv_id": 2,
+    "usr_id": "user123",
+    "schd_id": 11,
+    "tkt_id": 6,
+    "stts_cd": "결제완료",
+    "reg_dt": "2024-01-14T14:20:00",
+    "cncl_rsn": null,
+    "mod_usr_ID": null
+  }
+]
+```
+
+---
+
+### 이용중인 수강권/강의내역 조회
+
+#### API 정보
+- **URL**: `/api/reservations/user/{userId}/active`
+- **Method**: `GET`
+- **Description**: 이용중인 수강권/강의내역을 조회한다 (결제완료 상태만 반환)
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | userId | Long | Y | 사용자 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Array | | Array[Reservation] | Y | 예약 목록 (결제완료만) | |
+| | id | Long | Y | 예약 ID | |
+| | userId | Long | Y | 사용자 ID | |
+| | classId | Long | N | 클래스 ID | |
+| | facilityId | Long | N | 시설 ID | |
+| | paymentStatus | String | Y | 결제 상태 (결제완료) | 결제완료 |
+| | deleted | Boolean | Y | 삭제 여부 | false |
+| | createdAt | LocalDateTime | Y | 생성 시간 | |
+| | deletedAt | LocalDateTime | N | 삭제 시간 | |
+
+#### Request Example
+```
+GET /api/reservations/user/1/active
+```
+
+#### Response Example
+```json
+[
+  {
+    "rsv_id": 2,
+    "usr_id": "user123",
+    "schd_id": 11,
+    "tkt_id": 6,
+    "stts_cd": "결제완료",
+    "reg_dt": "2024-01-14T14:20:00",
+    "cncl_rsn": null,
+    "mod_usr_ID": null
+  }
+]
+```
+
+---
+
+### 예약 생성
+
+#### API 정보
+- **URL**: `/api/reservations`
+- **Method**: `POST`
+- **Description**: 새로운 예약을 생성한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Content-Type | Content-Type | String | Y | application/json | |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Body | - | Reservation | Y | 예약 정보 | - |
+| | usr_id | String | Y | 회원(사용자) ID | - |
+| | schd_id | Long | Y | 스케줄 ID | - |
+| | tkt_id | Long | N | 사용이용권 ID | - |
+| | stts_cd | String | Y | 상태코드 | - |
+| | cncl_rsn | String | N | 취소/변경사유(관리자용) | - |
+| | mod_usr_ID | String | N | 수정자 ID | - |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| String | | String | Y | 응답 메시지 | |
+
+#### Request Example
+```
+POST /api/reservations
+Content-Type: application/json
+
+{
+  "usr_id": "user123",
+  "schd_id": 10,
+  "tkt_id": 5,
+  "stts_cd": "예약완료"
+}
+```
+
+#### Response Example
+```
+예약 완료
+```
+
+---
+
+### 결제 상태 변경
+
+#### API 정보
+- **URL**: `/api/reservations/{id}/payment-status`
+- **Method**: `PATCH`
+- **Description**: 예약의 결제 상태를 변경한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Query Parameter | paymentStatus | String | Y | 결제 상태 (대기중/결제완료) | |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | id | Long | Y | 예약 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| String | | String | Y | 응답 메시지 | |
+
+#### Request Example
+```
+PATCH /api/reservations/1/payment-status?paymentStatus=결제완료
+```
+
+#### Response Example
+```
+결제 상태가 변경되었습니다: 결제완료
+```
+
+---
+
+### 예약 삭제
+
+#### API 정보
+- **URL**: `/api/reservations/{id}`
+- **Method**: `DELETE`
+- **Description**: 예약을 삭제한다 (소프트 삭제)
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | id | Long | Y | 예약 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| String | | String | Y | 응답 메시지 | |
+
+#### Request Example
+```
+DELETE /api/reservations/1
+```
+
+#### Response Example
+```
+예약 삭제 완료
+```
+
+---
+
+### 전체 리뷰 목록 조회
+
+#### API 정보
+- **URL**: `/review`
+- **Method**: `GET`
+- **Description**: 전체 리뷰 목록을 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Array | | Array[Review] | Y | 리뷰 목록 | |
+| | id | Integer | Y | 리뷰 ID | |
+| | userId | Integer | Y | 사용자 ID | |
+| | instructorId | Integer | Y | 강사 ID | |
+| | reservationId | Integer | Y | 예약 ID | |
+| | rating | Integer | Y | 평점 | |
+| | comment | String | N | 리뷰 내용 | |
+| | createdAt | LocalDateTime | Y | 생성 시간 | |
+
+#### Request Example
+```
+GET /review
+```
+
+#### Response Example
+```json
+[
+  {
+    "id": 1,
+    "userId": 1,
+    "instructorId": 5,
+    "reservationId": 10,
+    "rating": 5,
+    "comment": "좋은 강의였습니다.",
+    "createdAt": "2024-01-15T10:30:00"
+  }
+]
+```
+
+---
+
+### 리뷰 단건 조회
+
+#### API 정보
+- **URL**: `/review/{id}`
+- **Method**: `GET`
+- **Description**: 리뷰 ID로 리뷰 정보를 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | id | Integer | Y | 리뷰 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Object | | Review | Y | 리뷰 정보 | |
+| | id | Integer | Y | 리뷰 ID | |
+| | userId | Integer | Y | 사용자 ID | |
+| | instructorId | Integer | Y | 강사 ID | |
+| | reservationId | Integer | Y | 예약 ID | |
+| | rating | Integer | Y | 평점 | |
+| | comment | String | N | 리뷰 내용 | |
+| | createdAt | LocalDateTime | Y | 생성 시간 | |
+
+#### Request Example
+```
+GET /review/1
+```
+
+#### Response Example
+```json
+{
+  "id": 1,
+  "userId": 1,
+  "instructorId": 5,
+  "reservationId": 10,
+  "rating": 5,
+  "comment": "좋은 강의였습니다.",
+  "createdAt": "2024-01-15T10:30:00"
+}
+```
+
+---
+
+### 강사별 리뷰 조회
+
+#### API 정보
+- **URL**: `/review/instructor/{instructorId}`
+- **Method**: `GET`
+- **Description**: 특정 강사의 리뷰 목록을 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | instructorId | Integer | Y | 강사 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Array | | Array[Review] | Y | 리뷰 목록 | |
+| | id | Integer | Y | 리뷰 ID | |
+| | userId | Integer | Y | 사용자 ID | |
+| | instructorId | Integer | Y | 강사 ID | |
+| | reservationId | Integer | Y | 예약 ID | |
+| | rating | Integer | Y | 평점 | |
+| | comment | String | N | 리뷰 내용 | |
+| | createdAt | LocalDateTime | Y | 생성 시간 | |
+
+#### Request Example
+```
+GET /review/instructor/5
+```
+
+#### Response Example
+```json
+[
+  {
+    "id": 1,
+    "userId": 1,
+    "instructorId": 5,
+    "reservationId": 10,
+    "rating": 5,
+    "comment": "좋은 강의였습니다.",
+    "createdAt": "2024-01-15T10:30:00"
+  }
+]
+```
+
+---
+
+### 사용자별 리뷰 조회
+
+#### API 정보
+- **URL**: `/review/user/{userId}`
+- **Method**: `GET`
+- **Description**: 특정 사용자의 리뷰 목록을 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | userId | Integer | Y | 사용자 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Array | | Array[Review] | Y | 리뷰 목록 | |
+| | id | Integer | Y | 리뷰 ID | |
+| | userId | Integer | Y | 사용자 ID | |
+| | instructorId | Integer | Y | 강사 ID | |
+| | reservationId | Integer | Y | 예약 ID | |
+| | rating | Integer | Y | 평점 | |
+| | comment | String | N | 리뷰 내용 | |
+| | createdAt | LocalDateTime | Y | 생성 시간 | |
+
+#### Request Example
+```
+GET /review/user/1
+```
+
+#### Response Example
+```json
+[
+  {
+    "id": 1,
+    "userId": 1,
+    "instructorId": 5,
+    "reservationId": 10,
+    "rating": 5,
+    "comment": "좋은 강의였습니다.",
+    "createdAt": "2024-01-15T10:30:00"
+  }
+]
+```
+
+---
+
+### 예약별 리뷰 조회
+
+#### API 정보
+- **URL**: `/review/reservation/{reservationId}`
+- **Method**: `GET`
+- **Description**: 특정 예약의 리뷰를 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | reservationId | Integer | Y | 예약 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Object | | Review | Y | 리뷰 정보 | |
+| | id | Integer | Y | 리뷰 ID | |
+| | userId | Integer | Y | 사용자 ID | |
+| | instructorId | Integer | Y | 강사 ID | |
+| | reservationId | Integer | Y | 예약 ID | |
+| | rating | Integer | Y | 평점 | |
+| | comment | String | N | 리뷰 내용 | |
+| | createdAt | LocalDateTime | Y | 생성 시간 | |
+
+#### Request Example
+```
+GET /review/reservation/10
+```
+
+#### Response Example
+```json
+{
+  "id": 1,
+  "userId": 1,
+  "instructorId": 5,
+  "reservationId": 10,
+  "rating": 5,
+  "comment": "좋은 강의였습니다.",
+  "createdAt": "2024-01-15T10:30:00"
+}
+```
+
+---
+
+### 리뷰 생성
+
+#### API 정보
+- **URL**: `/review`
+- **Method**: `POST`
+- **Description**: 새로운 리뷰를 생성한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Content-Type | Content-Type | String | Y | application/json | |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Object | | Review | Y | 리뷰 정보 | |
+| | userId | Integer | Y | 사용자 ID | |
+| | instructorId | Integer | Y | 강사 ID | |
+| | reservationId | Integer | Y | 예약 ID | |
+| | rating | Integer | Y | 평점 | |
+| | comment | String | N | 리뷰 내용 | |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Integer | | Integer | Y | 생성된 리뷰 ID | |
+
+#### Request Example
+```
+POST /review
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "instructorId": 5,
+  "reservationId": 10,
+  "rating": 5,
+  "comment": "좋은 강의였습니다."
+}
+```
+
+#### Response Example
+```
+1
+```
+
+---
+
+### 리뷰 수정
+
+#### API 정보
+- **URL**: `/review/{id}`
+- **Method**: `PUT`
+- **Description**: 리뷰 정보를 수정한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Content-Type | Content-Type | String | Y | application/json | |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | id | Integer | Y | 리뷰 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Object | | Review | Y | 수정할 리뷰 정보 | |
+| | userId | Integer | Y | 사용자 ID | |
+| | instructorId | Integer | Y | 강사 ID | |
+| | reservationId | Integer | Y | 예약 ID | |
+| | rating | Integer | Y | 평점 | |
+| | comment | String | N | 리뷰 내용 | |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Integer | | Integer | Y | 수정된 행 수 | |
+
+#### Request Example
+```
+PUT /review/1
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "instructorId": 5,
+  "reservationId": 10,
+  "rating": 4,
+  "comment": "수정된 리뷰 내용"
+}
+```
+
+#### Response Example
+```
+1
+```
+
+---
+
+### 리뷰 삭제
+
+#### API 정보
+- **URL**: `/review/{id}`
+- **Method**: `DELETE`
+- **Description**: 리뷰를 삭제한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | id | Integer | Y | 리뷰 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Integer | | Integer | Y | 삭제된 행 수 | |
+
+#### Request Example
+```
+DELETE /review/1
+```
+
+#### Response Example
+```
+1
+```
+
+---
+
+### 전체 거래 신청 목록 조회
+
+#### API 정보
+- **URL**: `/api/trades`
+- **Method**: `GET`
+- **Description**: 전체 이용권 거래 신청 목록을 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Array | | Array[TradeRequest] | Y | 거래 신청 목록 | |
+| | id | Long | Y | 거래 ID | |
+| | reservationId | Long | Y | 예약 ID | |
+| | sellerUserId | Long | Y | 판매자 사용자 ID | |
+| | buyerUserId | Long | N | 구매자 사용자 ID | |
+| | price | Integer | N | 거래 금액 | |
+| | status | String | Y | 거래 상태 (PENDING/APPROVED/REJECTED) | PENDING |
+| | createdAt | LocalDateTime | Y | 생성 시간 | |
+| | updatedAt | LocalDateTime | Y | 수정 시간 | |
+
+#### Request Example
+```
+GET /api/trades
+```
+
+#### Response Example
+```json
+[
+  {
+    "id": 10,
+    "reservationId": 2,
+    "sellerUserId": 1,
+    "buyerUserId": 15,
+    "price": 50000,
+    "status": "PENDING",
+    "createdAt": "2024-01-20T12:00:00",
+    "updatedAt": "2024-01-20T12:00:00"
+  }
+]
+```
+
+---
+
+### 거래 신청 단건 조회
+
+#### API 정보
+- **URL**: `/api/trades/{id}`
+- **Method**: `GET`
+- **Description**: 거래 ID로 거래 신청 정보를 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | id | Long | Y | 거래 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Object | | TradeRequest | Y | 거래 신청 정보 | |
+| | id | Long | Y | 거래 ID | |
+| | reservationId | Long | Y | 예약 ID | |
+| | sellerUserId | Long | Y | 판매자 사용자 ID | |
+| | buyerUserId | Long | N | 구매자 사용자 ID | |
+| | price | Integer | N | 거래 금액 | |
+| | status | String | Y | 거래 상태 (PENDING/APPROVED/REJECTED) | PENDING |
+| | createdAt | LocalDateTime | Y | 생성 시간 | |
+| | updatedAt | LocalDateTime | Y | 수정 시간 | |
+
+#### Request Example
+```
+GET /api/trades/10
+```
+
+#### Response Example
+```json
+{
+  "id": 10,
+  "reservationId": 2,
+  "sellerUserId": 1,
+  "buyerUserId": 15,
+  "price": 50000,
+  "status": "PENDING",
+  "createdAt": "2024-01-20T12:00:00",
+  "updatedAt": "2024-01-20T12:00:00"
+}
+```
+
+---
+
+### 사용자별 거래 신청 조회
+
+#### API 정보
+- **URL**: `/api/trades/user/{userId}`
+- **Method**: `GET`
+- **Description**: 특정 사용자의 거래 신청 목록을 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | userId | Long | Y | 사용자 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Array | | Array[TradeRequest] | Y | 거래 신청 목록 | |
+| | id | Long | Y | 거래 ID | |
+| | reservationId | Long | Y | 예약 ID | |
+| | sellerUserId | Long | Y | 판매자 사용자 ID | |
+| | buyerUserId | Long | N | 구매자 사용자 ID | |
+| | price | Integer | N | 거래 금액 | |
+| | status | String | Y | 거래 상태 (PENDING/APPROVED/REJECTED) | PENDING |
+| | createdAt | LocalDateTime | Y | 생성 시간 | |
+| | updatedAt | LocalDateTime | Y | 수정 시간 | |
+
+#### Request Example
+```
+GET /api/trades/user/1
+```
+
+#### Response Example
+```json
+[
+  {
+    "id": 10,
+    "reservationId": 2,
+    "sellerUserId": 1,
+    "buyerUserId": 15,
+    "price": 50000,
+    "status": "PENDING",
+    "createdAt": "2024-01-20T12:00:00",
+    "updatedAt": "2024-01-20T12:00:00"
+  }
+]
+```
+
+---
+
+### 예약별 거래 신청 조회
+
+#### API 정보
+- **URL**: `/api/trades/reservation/{reservationId}`
+- **Method**: `GET`
+- **Description**: 특정 예약의 거래 신청 목록을 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | reservationId | Long | Y | 예약 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Array | | Array[TradeRequest] | Y | 거래 신청 목록 | |
+| | id | Long | Y | 거래 ID | |
+| | reservationId | Long | Y | 예약 ID | |
+| | sellerUserId | Long | Y | 판매자 사용자 ID | |
+| | buyerUserId | Long | N | 구매자 사용자 ID | |
+| | price | Integer | N | 거래 금액 | |
+| | status | String | Y | 거래 상태 (PENDING/APPROVED/REJECTED) | PENDING |
+| | createdAt | LocalDateTime | Y | 생성 시간 | |
+| | updatedAt | LocalDateTime | Y | 수정 시간 | |
+
+#### Request Example
+```
+GET /api/trades/reservation/2
+```
+
+#### Response Example
+```json
+[
+  {
+    "id": 10,
+    "reservationId": 2,
+    "sellerUserId": 1,
+    "buyerUserId": 15,
+    "price": 50000,
+    "status": "PENDING",
+    "createdAt": "2024-01-20T12:00:00",
+    "updatedAt": "2024-01-20T12:00:00"
+  }
+]
+```
+
+---
+
+### 이용권 거래 신청 생성
+
+#### API 정보
+- **URL**: `/api/trades`
+- **Method**: `POST`
+- **Description**: 새로운 이용권 거래 신청을 생성한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Content-Type | Content-Type | String | Y | application/json | |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Object | | TradeRequest | Y | 거래 신청 정보 | |
+| | reservationId | Long | Y | 예약 ID | |
+| | sellerUserId | Long | Y | 판매자 사용자 ID | |
+| | buyerUserId | Long | N | 구매자 사용자 ID | |
+| | price | Integer | N | 거래 금액 | |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| String | | String | Y | 응답 메시지 | |
+
+#### Request Example
+```
+POST /api/trades
+Content-Type: application/json
+
+{
+  "reservationId": 2,
+  "sellerUserId": 1,
+  "buyerUserId": 15,
+  "price": 50000
+}
+```
+
+#### Response Example
+```
+거래 신청이 등록되었습니다.
+```
+
+---
+
+### 거래 상태 변경
+
+#### API 정보
+- **URL**: `/api/trades/{id}/status`
+- **Method**: `PATCH`
+- **Description**: 거래 신청의 상태를 변경한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Query Parameter | status | String | Y | 거래 상태 (PENDING/APPROVED/REJECTED) | |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | id | Long | Y | 거래 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| String | | String | Y | 응답 메시지 | |
+
+#### Request Example
+```
+PATCH /api/trades/10/status?status=APPROVED
+```
+
+#### Response Example
+```
+거래 상태가 변경되었습니다: APPROVED
+```
+
+---
+
+### 사용자별 이용내역 조회
+
+#### API 정보
+- **URL**: `/api/history/user/{userId}`
+- **Method**: `GET`
+- **Description**: 특정 사용자의 이용내역을 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | userId | Long | Y | 사용자 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Array | | Array[HistoryEntry] | Y | 이용내역 목록 | |
+| | id | Long | Y | 히스토리 ID | |
+| | userId | Long | Y | 사용자 ID | |
+| | reservationId | Long | N | 예약 ID | |
+| | tradeId | Long | N | 거래 ID | |
+| | action | String | Y | 이벤트명 (예: TRADE_CREATED, TRADE_STATUS_APPROVED) | |
+| | detail | String | N | 추가 설명 | |
+| | createdAt | LocalDateTime | Y | 기록 시각 | |
+
+#### Request Example
+```
+GET /api/history/user/1
+```
+
+#### Response Example
+```json
+[
+  {
+    "id": 1,
+    "userId": 1,
+    "reservationId": 2,
+    "tradeId": 10,
+    "action": "TRADE_CREATED",
+    "detail": "거래 신청이 생성되었습니다.",
+    "createdAt": "2024-01-20T12:00:00"
+  }
+]
+```
+
+---
+
+### 예약별 이용내역 조회
+
+#### API 정보
+- **URL**: `/api/history/reservation/{reservationId}`
+- **Method**: `GET`
+- **Description**: 특정 예약의 이용내역을 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | reservationId | Long | Y | 예약 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Array | | Array[HistoryEntry] | Y | 이용내역 목록 | |
+| | id | Long | Y | 히스토리 ID | |
+| | userId | Long | Y | 사용자 ID | |
+| | reservationId | Long | N | 예약 ID | |
+| | tradeId | Long | N | 거래 ID | |
+| | action | String | Y | 이벤트명 (예: TRADE_CREATED, TRADE_STATUS_APPROVED) | |
+| | detail | String | N | 추가 설명 | |
+| | createdAt | LocalDateTime | Y | 기록 시각 | |
+
+#### Request Example
+```
+GET /api/history/reservation/2
+```
+
+#### Response Example
+```json
+[
+  {
+    "id": 1,
+    "userId": 1,
+    "reservationId": 2,
+    "tradeId": 10,
+    "action": "TRADE_CREATED",
+    "detail": "거래 신청이 생성되었습니다.",
+    "createdAt": "2024-01-20T12:00:00"
+  }
+]
+```
+
+---
+
+### 거래별 이용내역 조회
+
+#### API 정보
+- **URL**: `/api/history/trade/{tradeId}`
+- **Method**: `GET`
+- **Description**: 특정 거래의 이용내역을 조회한다
+
+#### Request
+
+##### Header
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Query Params
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+##### Path Variables
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Path Variable | tradeId | Long | Y | 거래 ID | |
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+|            |      |      |           |             |         |
+
+#### Response
+
+##### Body
+| Parameters | Name | Type | Mandatory | Description | Default |
+|------------|------|------|-----------|-------------|---------|
+| Array | | Array[HistoryEntry] | Y | 이용내역 목록 | |
+| | id | Long | Y | 히스토리 ID | |
+| | userId | Long | Y | 사용자 ID | |
+| | reservationId | Long | N | 예약 ID | |
+| | tradeId | Long | N | 거래 ID | |
+| | action | String | Y | 이벤트명 (예: TRADE_CREATED, TRADE_STATUS_APPROVED) | |
+| | detail | String | N | 추가 설명 | |
+| | createdAt | LocalDateTime | Y | 기록 시각 | |
+
+#### Request Example
+```
+GET /api/history/trade/10
+```
+
+#### Response Example
+```json
+[
+  {
+    "id": 1,
+    "userId": 1,
+    "reservationId": 2,
+    "tradeId": 10,
+    "action": "TRADE_CREATED",
+    "detail": "거래 신청이 생성되었습니다.",
+    "createdAt": "2024-01-20T12:00:00"
+  }
+]
+```
+
+---
+
 ### 예약 관련 API
 
 | 메서드 | 엔드포인트 | 설명 | 요청 본문 |
 |--------|-----------|------|----------|
-| GET | `/api/reservations` | 전체 예약 목록 조회 | - |
-| GET | `/api/reservations/{id}` | 예약 단건 조회 | - |
-| GET | `/api/reservations/user/{userId}` | 사용자별 예약 목록 조회 | - |
-| GET | `/api/reservations/user/{userId}/active` | **이용중인 수강권/강의내역 조회** (결제완료 상태만) | - |
-| GET | `/api/reservations/payment-status/{paymentStatus}` | 결제 상태별 예약 목록 조회 | - |
-| GET | `/api/reservations/user/{userId}/payment-status/{paymentStatus}` | 사용자별 + 결제 상태별 예약 목록 조회 | - |
-| GET | `/api/trades` | 이용권 거래 신청 전체 조회 | - |
-| GET | `/api/trades/{id}` | 이용권 거래 신청 단건 조회 | - |
-| GET | `/api/trades/user/{userId}` | 사용자별 이용권 거래 신청 조회 | - |
-| GET | `/api/trades/reservation/{reservationId}` | 예약별 이용권 거래 신청 조회 | - |
+| GET | `/api/reservations` | 전체 예약 목록 조회 | |
+| GET | `/api/reservations/{id}` | 예약 단건 조회 | |
+| GET | `/api/reservations/user/{userId}` | 사용자별 예약 목록 조회 | |
+| GET | `/api/reservations/user/{userId}/active` | **이용중인 수강권/강의내역 조회** (결제완료 상태만) | |
+| GET | `/api/reservations/payment-status/{paymentStatus}` | 결제 상태별 예약 목록 조회 | |
+| GET | `/api/reservations/user/{userId}/payment-status/{paymentStatus}` | 사용자별 + 결제 상태별 예약 목록 조회 | |
+| GET | `/api/trades` | 이용권 거래 신청 전체 조회 | |
+| GET | `/api/trades/{id}` | 이용권 거래 신청 단건 조회 | |
+| GET | `/api/trades/user/{userId}` | 사용자별 이용권 거래 신청 조회 | |
+| GET | `/api/trades/reservation/{reservationId}` | 예약별 이용권 거래 신청 조회 | |
 | POST | `/api/trades` | 이용권 거래 신청 생성 | `TradeRequest` 객체 |
 | PATCH | `/api/trades/{id}/status` | 이용권 거래 상태 변경 | `status` 파라미터 (PENDING/APPROVED/REJECTED) |
 | POST | `/api/reservations` | 예약 생성 | `Reservation` 객체 |
 | PATCH | `/api/reservations/{id}/payment-status` | 결제 상태 변경 | `paymentStatus` 파라미터 |
-| DELETE | `/api/reservations/{id}` | 예약 삭제 | - |
-| GET | `/api/history/user/{userId}` | 사용자별 이용내역 조회 | - |
-| GET | `/api/history/reservation/{reservationId}` | 예약별 이용내역 조회 | - |
-| GET | `/api/history/trade/{tradeId}` | 거래별 이용내역 조회 | - |
+| DELETE | `/api/reservations/{id}` | 예약 삭제 | |
+| GET | `/api/history/user/{userId}` | 사용자별 이용내역 조회 | |
+| GET | `/api/history/reservation/{reservationId}` | 예약별 이용내역 조회 | |
+| GET | `/api/history/trade/{tradeId}` | 거래별 이용내역 조회 | |
 
 ### 예시 요청/응답
 
@@ -420,24 +2076,24 @@ GET /api/reservations/user/1
 ```json
 [
   {
-    "id": 1,
-    "userId": 1,
-    "classId": 10,
-    "facilityId": 5,
-    "paymentStatus": "대기중",
-    "deleted": false,
-    "createdAt": "2024-01-15T10:30:00",
-    "deletedAt": null
+    "rsv_id": 1,
+    "usr_id": "user123",
+    "schd_id": 10,
+    "tkt_id": 5,
+    "stts_cd": "예약완료",
+    "reg_dt": "2024-01-15T10:30:00",
+    "cncl_rsn": null,
+    "mod_usr_ID": null
   },
   {
-    "id": 2,
-    "userId": 1,
-    "classId": 11,
-    "facilityId": 6,
-    "paymentStatus": "결제완료",
-    "deleted": false,
-    "createdAt": "2024-01-14T14:20:00",
-    "deletedAt": null
+    "rsv_id": 2,
+    "usr_id": "user123",
+    "schd_id": 11,
+    "tkt_id": 6,
+    "stts_cd": "결제완료",
+    "reg_dt": "2024-01-14T14:20:00",
+    "cncl_rsn": null,
+    "mod_usr_ID": null
   }
 ]
 ```
@@ -451,14 +2107,14 @@ GET /api/reservations/user/1/active
 ```json
 [
   {
-    "id": 2,
-    "userId": 1,
-    "classId": 11,
-    "facilityId": 6,
-    "paymentStatus": "결제완료",
-    "deleted": false,
-    "createdAt": "2024-01-14T14:20:00",
-    "deletedAt": null
+    "rsv_id": 2,
+    "usr_id": "user123",
+    "schd_id": 11,
+    "tkt_id": 6,
+    "stts_cd": "결제완료",
+    "reg_dt": "2024-01-14T14:20:00",
+    "cncl_rsn": null,
+    "mod_usr_ID": null
   },
   {
     "id": 3,

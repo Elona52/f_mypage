@@ -4,15 +4,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.mapper.ReviewMapper">
 
-    <resultMap id="reviewMap" type="com.project.domain.Review">
-        <id property="id" column="review_id"/>
-        <result property="userId" column="user_id"/>
-        <result property="instructorId" column="instructor_id"/>
-        <result property="reservationId" column="reservation_id"/>
-        <result property="rating" column="rating"/>
-        <result property="comment" column="content"/>
-        <result property="createdAt" column="created_at"/>
-    </resultMap>
+<resultMap id="reviewResult" type="com.project.review.domain.Review">
+    <id property="id" column="id"/>
+    <result property="userId" column="user_id"/>
+    <result property="instructorId" column="instructor_id"/>
+    <result property="reservationId" column="reservation_id"/>
+    <result property="rating" column="rating"/>
+    <result property="comment" column="comment"/>
+    <result property="createdAt" column="created_at"/>
+</resultMap>
+
 
     <!-- 전체 조회 -->
     <select id="findAll" resultMap="reviewMap">

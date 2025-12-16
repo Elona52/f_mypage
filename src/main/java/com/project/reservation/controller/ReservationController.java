@@ -31,7 +31,7 @@ public class ReservationController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Reservation>> getUserReservations(@PathVariable Long userId) {
+    public ResponseEntity<List<Reservation>> getUserReservations(@PathVariable String userId) {
         return ResponseEntity.ok(reservationService.getReservationsByUser(userId));
     }
 
@@ -43,7 +43,7 @@ public class ReservationController {
 
     @GetMapping("/user/{userId}/payment-status/{paymentStatus}")
     public ResponseEntity<List<Reservation>> getUserReservationsByPaymentStatus(
-            @PathVariable Long userId, 
+            @PathVariable String userId, 
             @PathVariable String paymentStatus) {
         return ResponseEntity.ok(reservationService.getReservationsByUserAndPaymentStatus(userId, paymentStatus));
     }
@@ -53,7 +53,7 @@ public class ReservationController {
      * 결제완료 상태인 예약만 반환합니다.
      */
     @GetMapping("/user/{userId}/active")
-    public ResponseEntity<List<Reservation>> getActiveReservations(@PathVariable Long userId) {
+    public ResponseEntity<List<Reservation>> getActiveReservations(@PathVariable String userId) {
         return ResponseEntity.ok(reservationService.getActiveReservationsByUser(userId));
     }
 
@@ -67,14 +67,12 @@ public class ReservationController {
     public ResponseEntity<?> updatePaymentStatus(
             @PathVariable Long id,
             @RequestParam String paymentStatus) {
-        // 결제 상태 유효성 검증
-        if (!paymentStatus.equals("대기중") && !paymentStatus.equals("결제완료")) {
-            return ResponseEntity.badRequest().body("결제 상태는 '대기중' 또는 '결제완료'만 가능합니다.");
-        }
+        // 상태코드 유효성 검증 (필요한 상태코드 값으로 수정)
+        // 예: "예약완료", "결제완료", "취소" 등
         
         int result = reservationService.updatePaymentStatus(id, paymentStatus);
         if (result > 0) {
-            return ResponseEntity.ok("결제 상태가 변경되었습니다: " + paymentStatus);
+            return ResponseEntity.ok("상태코드가 변경되었습니다: " + paymentStatus);
         }
         return ResponseEntity.notFound().build();
     }
