@@ -1,122 +1,63 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.project.mapper.ReviewMapper">
-
-<resultMap id="reviewResult" type="com.project.review.domain.Review">
-    <id property="id" column="id"/>
-    <result property="userId" column="user_id"/>
-    <result property="instructorId" column="instructor_id"/>
-    <result property="reservationId" column="reservation_id"/>
-    <result property="rating" column="rating"/>
-    <result property="comment" column="comment"/>
-    <result property="createdAt" column="created_at"/>
-</resultMap>
-
-
-    <!-- 전체 조회 -->
-    <select id="findAll" resultMap="reviewMap">
-        SELECT *
-        FROM review rev
-        WHERE EXISTS (
-            SELECT 1 FROM reservation r
-            WHERE r.reservation_id = rev.reservation_id
-              AND r.payment_status = '결제완료'
-              AND (r.deleted = false OR r.deleted IS NULL)
-        )
-        AND EXISTS (
-            SELECT 1 FROM history h
-            WHERE h.reservation_id = rev.reservation_id
-        )
-        ORDER BY rev.created_at DESC
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.app.review.mapper.ReviewMapper">
+    <select id="selectReviewsByUserId" parameterType="String" resultType="ReviewDto">
+		SELECT
+		r.RVW_ID AS reviewId,
+		r.RSV_ID AS reservationId,
+		r.RATING AS rating,
+		r.CONTENT AS content,
+		r.INST_ID AS instructorId,
+		r.REG_DT AS registrationDateTime
+		FROM REVIEW r
+		INNER JOIN RESERVATION rsv ON r.RSV_ID = rsv.RSV_ID
+		WHERE rsv.USR_ID = #{userId}
     </select>
-
-    <!-- 단건 조회 -->
-    <select id="findById" resultMap="reviewMap">
-        SELECT *
-        FROM review rev
-        WHERE rev.review_id = #{id}
-        AND EXISTS (
-            SELECT 1 FROM reservation r
-            WHERE r.reservation_id = rev.reservation_id
-              AND r.payment_status = '결제완료'
-              AND (r.deleted = false OR r.deleted IS NULL)
-        )
-        AND EXISTS (
-            SELECT 1 FROM history h
-            WHERE h.reservation_id = rev.reservation_id
-        )
+    
+    <select id="selectReviewById" parameterType="Long" resultType="ReviewDto">
+		SELECT
+		RVW_ID AS reviewId,
+		RSV_ID AS reservationId,
+		RATING AS rating,
+		CONTENT AS content,
+		INST_ID AS instructorId,
+		REG_DT AS registrationDateTime
+		FROM REVIEW
+		WHERE RVW_ID = #{reviewId}
     </select>
-
-    <!-- instructor 별 리뷰 조회 -->
-    <select id="findByInstructor" resultMap="reviewMap">
-        SELECT *
-        FROM review rev
-        WHERE rev.instructor_id = #{instructorId}
-        AND EXISTS (
-            SELECT 1 FROM reservation r
-            WHERE r.reservation_id = rev.reservation_id
-              AND r.payment_status = '결제완료'
-              AND (r.deleted = false OR r.deleted IS NULL)
-        )
-        AND EXISTS (
-            SELECT 1 FROM history h
-            WHERE h.reservation_id = rev.reservation_id
-        )
+    
+    <select id="selectReviewByReservationId" parameterType="Long" resultType="ReviewDto">
+		SELECT
+		RVW_ID AS reviewId,
+		RSV_ID AS reservationId,
+		RATING AS rating,
+		CONTENT AS content,
+		INST_ID AS instructorId,
+		REG_DT AS registrationDateTime
+		FROM REVIEW
+		WHERE RSV_ID = #{reservationId}
     </select>
-
-    <!-- member 별 리뷰 조회 -->
-    <select id="findByUser" resultMap="reviewMap">
-        SELECT *
-        FROM review rev
-        WHERE rev.user_id = #{userId}
-        AND EXISTS (
-            SELECT 1 FROM reservation r
-            WHERE r.reservation_id = rev.reservation_id
-              AND r.payment_status = '결제완료'
-              AND (r.deleted = false OR r.deleted IS NULL)
-        )
-        AND EXISTS (
-            SELECT 1 FROM history h
-            WHERE h.reservation_id = rev.reservation_id
-        )
-    </select>
-
-    <!-- 예약 1건 = 리뷰 1개 규칙 -->
-    <select id="findByReservation" resultMap="reviewMap">
-        SELECT *
-        FROM review rev
-        WHERE rev.reservation_id = #{reservationId}
-        AND EXISTS (
-            SELECT 1 FROM reservation r
-            WHERE r.reservation_id = rev.reservation_id
-              AND r.payment_status = '결제완료'
-              AND (r.deleted = false OR r.deleted IS NULL)
-        )
-        AND EXISTS (
-            SELECT 1 FROM history h
-            WHERE h.reservation_id = rev.reservation_id
-        )
-    </select>
-
-    <!-- 등록 -->
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO review (user_id, instructor_id, reservation_id, rating, content)
-        VALUES (#{userId}, #{instructorId}, #{reservationId}, #{rating}, #{comment})
+    
+    <insert id="insertReview" parameterType="ReviewDto">
+	    <selectKey keyProperty="reviewId" resultType="long" order="BEFORE">
+        	SELECT "ADMIN"."ISEQ$$_117556".nextval AS REVIEW_ID FROM DUAL
+    	</selectKey>
+       	INSERT INTO REVIEW(RVW_ID, RSV_ID, RATING, CONTENT, INST_ID, REG_DT)
+    	VALUES (#{reviewId}, #{reservationId}, #{rating}, #{content}, #{instructorId}, SYSDATE)
     </insert>
-
-    <!-- 수정 -->
-    <update id="update">
-        UPDATE review
-        SET rating = #{rating},
-            content = #{comment}
-        WHERE review_id = #{id}
+    
+    <update id="updateReview" parameterType="ReviewDto">
+    	UPDATE REVIEW
+    	SET 
+    		RATING = #{rating},
+    		CONTENT = #{content}
+		WHERE RVW_ID = #{reviewId}    		
     </update>
-
-    <!-- 삭제 -->
-    <delete id="delete">
-        DELETE FROM review WHERE review_id = #{id}
+    
+    <delete id="deleteReviewById" parameterType="Long">
+    	DELETE FROM REVIEW
+    	WHERE RVW_ID = #{reviewId}
     </delete>
-
+    
 </mapper>
+
