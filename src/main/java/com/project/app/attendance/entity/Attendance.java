@@ -37,7 +37,7 @@ public class Attendance {
 	private Long attendanceId;
 	
 	@ManyToOne
-	@JoinColumn(name = "usr_id", nullable = false)
+	@JoinColumn(name = "usr_id", referencedColumnName = "userId", nullable = false)
 	private User user;
 	
 	@ManyToOne

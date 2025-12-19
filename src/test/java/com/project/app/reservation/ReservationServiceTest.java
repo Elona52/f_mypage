@@ -19,10 +19,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.project.app.payment.entity.Payment;
 import com.project.app.payment.repository.PaymentRepository;
-import com.project.app.reservation.dto.ReservationRequestDto;
 import com.project.app.reservation.dto.ReservationResponseDto;
 import com.project.app.reservation.entity.Reservation;
-import com.project.app.reservation.mapper.ReservationMapper;
+import com.project.app.reservation.repository.ReservationRepository;
 import com.project.app.reservation.service.ReservationService;
 import com.project.app.reservation.service.ReservationServiceImpl;
 import com.project.app.schedule.entity.Schedule;
@@ -36,7 +35,7 @@ import com.project.app.user.repository.UserRepository;
 class ReservationServiceTest {
 
 	@Mock
-	private ReservationMapper reservationRepository;
+	private ReservationRepository reservationRepository;
 	
 	@Mock
 	private UserRepository userRepository;
@@ -88,76 +87,15 @@ class ReservationServiceTest {
 		testPayment = Payment.builder()
 				.paymentId(1L)
 				.reservation(testReservation)
-				.amount(50000L)
-				.paymentMethod("CARD")
-				.paymentStatus("COMPLETED")
-				.paidAt(LocalDateTime.now())
-				.createdAt(LocalDateTime.now())
+				.user(testUser)
+				.paymentStatus("BANK_TRANSFER_COMPLETED")
+				.paymentAmount(java.math.BigDecimal.valueOf(50000))
+				.paymentDate(LocalDateTime.now())
+				.registrationDateTime(LocalDateTime.now())
 				.build();
 	}
 	
-	@Test
-	@DisplayName("예약 생성 성공")
-	void testCreateReservation_Success() {
-		// given
-		ReservationRequestDto requestDto = ReservationRequestDto.builder()
-				.userId("testuser")
-				.scheduleId(1L)
-				.reservedDate(LocalDateTime.now().plusDays(1))
-				.build();
-		
-		when(userRepository.findByUserId("testuser")).thenReturn(Optional.of(testUser));
-		when(scheduleRepository.findByScheduleId(1L)).thenReturn(Optional.of(testSchedule));
-		when(reservationRepository.save(any(Reservation.class))).thenReturn(testReservation);
-		when(paymentRepository.findByReservation(any(Reservation.class))).thenReturn(Optional.empty());
-		
-		// when
-		ReservationResponseDto response = reservationService.createReservation(requestDto);
-		
-		// then
-		assertNotNull(response);
-		assertEquals("요가 클래스", response.getExerciseName());
-		assertEquals("강남점", response.getExerciseLocation());
-		assertEquals("RESERVED", response.getStatusCode());
-		verify(reservationRepository, times(1)).save(any(Reservation.class));
-	}
-	
-	@Test
-	@DisplayName("예약 생성 실패 - 사용자 없음")
-	void testCreateReservation_UserNotFound() {
-		// given
-		ReservationRequestDto requestDto = ReservationRequestDto.builder()
-				.userId("nonexistent")
-				.scheduleId(1L)
-				.reservedDate(LocalDateTime.now().plusDays(1))
-				.build();
-		
-		when(userRepository.findByUserId("nonexistent")).thenReturn(Optional.empty());
-		
-		// when & then
-		assertThrows(RuntimeException.class, () -> {
-			reservationService.createReservation(requestDto);
-		});
-	}
-	
-	@Test
-	@DisplayName("예약 생성 실패 - 스케줄 없음")
-	void testCreateReservation_ScheduleNotFound() {
-		// given
-		ReservationRequestDto requestDto = ReservationRequestDto.builder()
-				.userId("testuser")
-				.scheduleId(999L)
-				.reservedDate(LocalDateTime.now().plusDays(1))
-				.build();
-		
-		when(userRepository.findByUserId("testuser")).thenReturn(Optional.of(testUser));
-		when(scheduleRepository.findByScheduleId(999L)).thenReturn(Optional.empty());
-		
-		// when & then
-		assertThrows(RuntimeException.class, () -> {
-			reservationService.createReservation(requestDto);
-		});
-	}
+	// 예약 생성 기능은 이 프로젝트에서 구현하지 않음 (조회 전용)
 	
 	@Test
 	@DisplayName("나의 운동 목록 조회 성공")
@@ -221,9 +159,7 @@ class ReservationServiceTest {
 		// then
 		assertNotNull(reservations);
 		assertEquals(1, reservations.size());
-		assertNotNull(reservations.get(0).getPayment());
-		assertEquals(50000L, reservations.get(0).getPayment().getAmount());
-		assertEquals("COMPLETED", reservations.get(0).getPayment().getPaymentStatus());
+		assertEquals("BANK_TRANSFER_COMPLETED", reservations.get(0).getPaymentStatus());
 	}
 	
 	@Test

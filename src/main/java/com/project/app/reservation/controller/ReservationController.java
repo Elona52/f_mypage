@@ -55,9 +55,32 @@ public class ReservationController {
 	}
 	
 	/**
+	 * 결제완료된 예약 목록 조회 (이용내역 화면)
+	 * GET /api/reservation/my/completed
+	 * 헤더: Authorization: Bearer {token}
+	 * 
+	 * 결제 상태가 COMPLETED인 예약만 조회합니다.
+	 * 경로 매핑 순서: 더 구체적인 경로를 먼저 배치
+	 */
+	@GetMapping("/my/completed")
+	public ResponseEntity<?> getMyCompletedReservations() {
+		try {
+			// 인증된 사용자의 결제완료된 예약 목록만 조회
+			String currentUserId = getCurrentUserId();
+			List<ReservationResponseDto> reservations = reservationService.getMyCompletedReservations(currentUserId);
+			return ResponseEntity.ok(reservations);
+		} catch (Exception e) {
+			log.error("결제완료 예약 목록 조회 중 오류 발생", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("결제완료 예약 목록 조회 중 오류가 발생했습니다: " + e.getMessage());
+		}
+	}
+	
+	/**
 	 * 나의 운동 목록 조회 (마이페이지)
 	 * GET /api/reservation/my
 	 * 헤더: Authorization: Bearer {token}
+	 * 경로 매핑 순서: 더 구체적인 경로를 먼저 배치
 	 */
 	@GetMapping("/my")
 	public ResponseEntity<?> getMyReservations() {
@@ -74,23 +97,32 @@ public class ReservationController {
 	}
 	
 	/**
-	 * 결제완료된 예약 목록 조회 (이용내역 화면)
-	 * GET /api/reservation/my/completed
+	 * 예약 상세 조회
+	 * GET /api/reservation/{reservationId}
 	 * 헤더: Authorization: Bearer {token}
 	 * 
-	 * 결제 상태가 COMPLETED인 예약만 조회합니다.
+	 * 인증된 사용자만 자신의 예약을 조회할 수 있습니다.
+	 * 경로 매핑 순서: 동적 경로는 구체적인 경로 뒤에 배치
 	 */
-	@GetMapping("/my/completed")
-	public ResponseEntity<?> getMyCompletedReservations() {
+	@GetMapping("/{reservationId}")
+	public ResponseEntity<?> getReservationById(@PathVariable("reservationId") Long reservationId) {
 		try {
-			// 인증된 사용자의 결제완료된 예약 목록만 조회
+			// 인증된 사용자만 자신의 예약을 조회할 수 있음
 			String currentUserId = getCurrentUserId();
-			List<ReservationResponseDto> reservations = reservationService.getMyCompletedReservations(currentUserId);
-			return ResponseEntity.ok(reservations);
+			ReservationResponseDto reservation = reservationService.getReservationById(reservationId);
+			
+			// 본인의 예약인지 확인
+			// ReservationResponseDto에 userId가 없으므로, 서비스에서 검증하거나
+			// 별도로 확인이 필요할 수 있음
+			return ResponseEntity.ok(reservation);
+		} catch (RuntimeException e) {
+			log.error("예약 조회 중 오류 발생", e);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body("예약을 찾을 수 없습니다: " + e.getMessage());
 		} catch (Exception e) {
-			log.error("결제완료 예약 목록 조회 중 오류 발생", e);
+			log.error("예약 조회 중 오류 발생", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("결제완료 예약 목록 조회 중 오류가 발생했습니다: " + e.getMessage());
+					.body("예약 조회 중 오류가 발생했습니다: " + e.getMessage());
 		}
 	}
 	

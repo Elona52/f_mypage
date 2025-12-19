@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.app.review.mapper.ReviewMapper">
-    <select id="selectReviewsByUserId" parameterType="String" resultType="ReviewDto">
+    <select id="selectReviewsByUserId" parameterType="String" resultType="com.project.app.review.dto.ReviewDto">
 		SELECT
 		r.RVW_ID AS reviewId,
 		r.RSV_ID AS reservationId,
@@ -14,7 +14,7 @@
 		WHERE rsv.USR_ID = #{userId}
     </select>
     
-    <select id="selectReviewById" parameterType="Long" resultType="ReviewDto">
+    <select id="selectReviewById" parameterType="Long" resultType="com.project.app.review.dto.ReviewDto">
 		SELECT
 		RVW_ID AS reviewId,
 		RSV_ID AS reservationId,
@@ -26,7 +26,7 @@
 		WHERE RVW_ID = #{reviewId}
     </select>
     
-    <select id="selectReviewByReservationId" parameterType="Long" resultType="ReviewDto">
+    <select id="selectReviewByReservationId" parameterType="Long" resultType="com.project.app.review.dto.ReviewDto">
 		SELECT
 		RVW_ID AS reviewId,
 		RSV_ID AS reservationId,
@@ -38,7 +38,7 @@
 		WHERE RSV_ID = #{reservationId}
     </select>
     
-    <insert id="insertReview" parameterType="ReviewDto">
+    <insert id="insertReview" parameterType="com.project.app.review.dto.ReviewDto">
 	    <selectKey keyProperty="reviewId" resultType="long" order="BEFORE">
         	SELECT "ADMIN"."ISEQ$$_117556".nextval AS REVIEW_ID FROM DUAL
     	</selectKey>
@@ -46,7 +46,7 @@
     	VALUES (#{reviewId}, #{reservationId}, #{rating}, #{content}, #{instructorId}, SYSDATE)
     </insert>
     
-    <update id="updateReview" parameterType="ReviewDto">
+    <update id="updateReview" parameterType="com.project.app.review.dto.ReviewDto">
     	UPDATE REVIEW
     	SET 
     		RATING = #{rating},

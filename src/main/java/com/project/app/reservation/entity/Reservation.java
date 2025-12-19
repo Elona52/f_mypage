@@ -9,14 +9,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import com.project.app.payment.entity.Payment;
 import com.project.app.schedule.entity.Schedule;
 import com.project.app.ticket.entity.Ticket;
 import com.project.app.user.entity.User;
@@ -38,7 +36,7 @@ public class Reservation {
 	private Long reservationId;
 	
 	@ManyToOne
-	@JoinColumn(name = "usr_id", nullable = false)
+	@JoinColumn(name = "usr_id", referencedColumnName = "userId", nullable = false)
 	private User user;
 	
 	@ManyToOne
@@ -63,8 +61,5 @@ public class Reservation {
 	
 	@Column(name = "rsvd_dt", nullable = false)
 	private LocalDateTime reservedDate; // 예약날짜 (사용자 선택날짜)
-	
-	@OneToOne(mappedBy = "reservation")
-	private Payment payment;
 }
 

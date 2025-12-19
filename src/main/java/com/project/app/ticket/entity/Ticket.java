@@ -34,7 +34,7 @@ public class Ticket {
 	private Long ticketId;
 	
 	@ManyToOne
-	@JoinColumn(name = "usr_id", nullable = false)
+	@JoinColumn(name = "usr_id", referencedColumnName = "userId", nullable = false)
 	private User user;
 	
 	@Column(name = "ticket_type")

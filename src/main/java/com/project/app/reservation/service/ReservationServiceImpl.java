@@ -41,7 +41,7 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public List<ReservationResponseDto> getMyCompletedReservations(String userId) {
 		// 입금완료된 결제 목록 조회 (이용목록)
-		List<Payment> completedPayments = paymentRepository.findByUserIdAndPaymentStatus(userId, "BANK_TRANSFER_COMPLETED");
+		List<Payment> completedPayments = paymentRepository.findByUser_UserIdAndPaymentStatus(userId, "BANK_TRANSFER_COMPLETED");
 		
 		// 결제에 연결된 예약만 필터링하여 반환
 		return completedPayments.stream()

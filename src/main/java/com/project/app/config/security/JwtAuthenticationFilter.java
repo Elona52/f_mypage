@@ -46,9 +46,20 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         String method = req.getMethod();
         String auth = req.getHeader("Authorization");
 
-        // test
-
         log.info("[JWT] {} {} Authorization={}", method, uri, auth);
+
+        // URL 정규화: 특수 문자 제거 (줄바꿈 %0A 등)
+        String cleanUri = uri.replaceAll("%0A", "").replaceAll("%0a", "").trim();
+        
+        // 로그인/회원가입/에러 핸들링 경로는 토큰 검증을 건너뜀
+        // 원본 URI와 정규화된 URI 모두 확인
+        if (uri.startsWith("/api/auth/") || cleanUri.startsWith("/api/auth/") || 
+            uri.equals("/api/user/register") || cleanUri.equals("/api/user/register") ||
+            uri.equals("/error") || cleanUri.equals("/error")) {
+            log.debug("[JWT] Skipping token validation for public endpoint: {} (cleaned: {})", uri, cleanUri);
+            chain.doFilter(request, response);
+            return;
+        }
 
         String token = resolveToken(req);
 
@@ -77,18 +88,14 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                 return;
             }
         } else {
-            // 토큰이 없는 경우 - 인증이 필요한 엔드포인트인지 확인
-            // /api/auth/** (로그인)과 /api/user/register (회원가입)은 permitAll이므로 여기서는 통과시킴
-            // 다른 경로는 Spring Security가 처리하도록 함
-            if (!uri.startsWith("/api/auth/") && !uri.equals("/api/user/register")) {
-                // 인증이 필요한 경로인데 토큰이 없는 경우
-                log.warn("[JWT] No token provided for protected endpoint: {}", uri);
-                jakarta.servlet.http.HttpServletResponse httpResponse = (jakarta.servlet.http.HttpServletResponse) response;
-                httpResponse.setStatus(401);
-                httpResponse.setContentType("application/json;charset=UTF-8");
-                httpResponse.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"인증 토큰이 필요합니다.\"}");
-                return;
-            }
+            // 토큰이 없는 경우 - 인증이 필요한 엔드포인트이므로 401 반환
+            // (로그인/회원가입 경로는 이미 위에서 처리됨)
+            log.warn("[JWT] No token provided for protected endpoint: {}", uri);
+            jakarta.servlet.http.HttpServletResponse httpResponse = (jakarta.servlet.http.HttpServletResponse) response;
+            httpResponse.setStatus(401);
+            httpResponse.setContentType("application/json;charset=UTF-8");
+            httpResponse.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"인증 토큰이 필요합니다.\"}");
+            return;
         }
 
         chain.doFilter(request, response);
