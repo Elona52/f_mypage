@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.app.review.mapper.ReviewMapper">
+    <select id="selectReviewsByUserId" parameterType="String" resultType="com.project.app.review.dto.ReviewDto">
+		SELECT
+		r.RVW_ID AS reviewId,
+		r.RSV_ID AS reservationId,
+		r.RATING AS rating,
+		r.CONTENT AS content,
+		r.INST_ID AS instructorId,
+		r.REG_DT AS registrationDateTime,
+		sch.exercise_date AS exerciseDate,
+		sch.exercise_name AS exerciseName,
+		sch.trainer_name AS trainerName,
+		sch.exercise_location AS exerciseLocation
+		FROM REVIEW r
+		INNER JOIN RESERVATION rsv ON r.RSV_ID = rsv.RSV_ID
+		LEFT JOIN SCHEDULE sch ON rsv.schd_id = sch.schd_id
+		WHERE rsv.USR_ID = #{userId}
+		ORDER BY r.REG_DT DESC
+    </select>
+    
+    <select id="selectReviewById" parameterType="Long" resultType="com.project.app.review.dto.ReviewDto">
+		SELECT
+		RVW_ID AS reviewId,
+		RSV_ID AS reservationId,
+		RATING AS rating,
+		CONTENT AS content,
+		INST_ID AS instructorId,
+		REG_DT AS registrationDateTime
+		FROM REVIEW
+		WHERE RVW_ID = #{reviewId}
+    </select>
+    
+    <select id="selectReviewByReservationId" parameterType="Long" resultType="com.project.app.review.dto.ReviewDto">
+		SELECT
+		RVW_ID AS reviewId,
+		RSV_ID AS reservationId,
+		RATING AS rating,
+		CONTENT AS content,
+		INST_ID AS instructorId,
+		REG_DT AS registrationDateTime
+		FROM REVIEW
+		WHERE RSV_ID = #{reservationId}
+    </select>
+    
+    <select id="selectReservationById" parameterType="Long" resultType="map">
+		SELECT
+		rsv.RSV_ID AS reservationId,
+		rsv.USR_ID AS userId
+		FROM RESERVATION rsv
+		WHERE rsv.RSV_ID = #{reservationId}
+    </select>
+    
+    <insert id="insertReview" parameterType="com.project.app.review.dto.ReviewDto" useGeneratedKeys="true" keyProperty="reviewId">
+       	INSERT INTO REVIEW(RSV_ID, RATING, CONTENT, INST_ID, REG_DT)
+    	VALUES (#{reservationId}, #{rating}, #{content}, #{instructorId}, NOW())
+    </insert>
+    
+    <update id="updateReview" parameterType="com.project.app.review.dto.ReviewDto">
+    	UPDATE REVIEW
+    	SET 
+    		RATING = #{rating},
+    		CONTENT = #{content}
+		WHERE RVW_ID = #{reviewId}    		
+    </update>
+    
+    <delete id="deleteReviewById" parameterType="Long">
+    	DELETE FROM REVIEW
+    	WHERE RVW_ID = #{reviewId}
+    </delete>
+    
+</mapper>
+
